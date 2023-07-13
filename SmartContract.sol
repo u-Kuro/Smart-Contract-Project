@@ -1,19 +1,35 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.18;
 
-contract ExceptionDemo {
-    uint256 public total;
+contract KANSHI {
+    string public tokenName = "KANSHI";
+    string public tokenAbbrv = "KSH";
+    uint public totalSupply = 0;
+    mapping(address => uint) public balances;
 
-    function setTotal(uint256 _value) external {
-        require(_value > 0, "Value must be greater than zero");
-        total = _value;
+    function mint(address _address, uint _value) public {
+        totalSupply += _value;
+        balances[_address] += _value;
     }
 
-    function divide(uint256 _numerator, uint256 _denominator) external pure returns (uint256) {
-        assert(_denominator != 0);
-        if (_numerator % _denominator != 0) {
-            revert("Division not exact");
-        }
-        return _numerator / _denominator;
+    function burnRequire(address _address, uint _value) public {
+        require(_value > 0, "Value must be greater than the current balance");
+        burn(_address, _value);
+    }
+
+    function burnRevert(address _address, uint _value) public {
+        if (_value <= 0) 
+        return revert("Value must be greater than the current balance");
+        burn(_address, _value);
+    }
+
+    function burnAssert(address _address, uint _value) public {
+        assert(_value > 0);
+        burn(_address, _value);
+    }
+
+    function burn(address _address, uint _value) private {
+        totalSupply -= _value;
+        balances[_address] -= _value;
     }
 }
